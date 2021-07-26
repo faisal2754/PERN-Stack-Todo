@@ -12,7 +12,7 @@ const typeDefs = gql`
   type Query {
     bruh: String
     todos: [Todo]
-    todo: Todo
+    todo(id: Int!): Todo
   }
 `
 const resolvers = {
@@ -22,10 +22,10 @@ const resolvers = {
       const allTodos = await prisma.todo.findMany()
       return allTodos
     },
-    todo: async (_, { todo_id }) => {
+    todo: async (_, { id }) => {
       const todo = await prisma.todo.findUnique({
         where: {
-          todo_id: Number(todo_id)
+          todo_id: id
         }
       })
       return todo
