@@ -1,15 +1,16 @@
-const pool = require('./db')
+const { PrismaClient } = require('@prisma/client')
 const router = require('express').Router()
+
+const prisma = new PrismaClient()
 
 // Create todo
 router.post('', async (req, res) => {
   try {
     const { description } = req.body
-    const newTodo = await pool.query(
-      'INSERT INTO todo (description) VALUES($1) RETURNING *',
-      [description]
-    )
-    res.json(newTodo.rows[0])
+    const newTodo = await prisma.todo.create({
+      data: { description }
+    })
+    res.json(newTodo)
   } catch (err) {
     console.log(err.message)
   }
@@ -18,8 +19,8 @@ router.post('', async (req, res) => {
 // Get all todos
 router.get('', async (req, res) => {
   try {
-    const allTodos = await pool.query('SELECT * FROM todo')
-    res.json(allTodos.rows)
+    const allTodos = await prisma.todo.findMany()
+    res.json(allTodos)
   } catch (err) {
     console.log(err)
   }
@@ -29,8 +30,12 @@ router.get('', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const todo = await pool.query('SELECT * FROM todo WHERE todo_id = $1', [id])
-    res.json(todo.rows)
+    const todo = await prisma.todo.findUnique({
+      where: {
+        todo_id: Number(id)
+      }
+    })
+    res.json(todo)
   } catch (err) {
     console.log(err)
   }
@@ -41,11 +46,13 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const { description } = req.body
-    const updateTodo = await pool.query(
-      'UPDATE todo SET description = $1 WHERE todo_id = $2 RETURNING *',
-      [description, id]
-    )
-    res.json(updateTodo.rows)
+    const updateTodo = await prisma.todo.update({
+      where: {
+        todo_id: Number(id)
+      },
+      data: { description }
+    })
+    res.json(updateTodo)
   } catch (err) {
     console.log(err)
   }
@@ -55,11 +62,12 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const deleteTodo = await pool.query(
-      'DELETE FROM todo WHERE todo_id = $1 RETURNING *',
-      [id]
-    )
-    res.json(deleteTodo.rows)
+    const deleteTodo = await prisma.todo.delete({
+      where: {
+        todo_id: Number(id)
+      }
+    })
+    res.json(deleteTodo)
   } catch (err) {
     console.log(err)
   }
