@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mikro-orm/core": "^4.5.7",
+    "@mikro-orm/postgresql": "^4.5.7",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "nodemon": "^2.0.12",
