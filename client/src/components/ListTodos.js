@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import EditTodo from './EditTodo'
+import { GET_TODOS } from '../graphql/queries'
 
 const ListTodos = () => {
   const [todos, setTodos] = useState([])
+
+  const { loading, error, data } = useQuery(GET_TODOS)
 
   // DELETE Request
   const deleteTodo = async (id) => {
@@ -22,6 +26,7 @@ const ListTodos = () => {
     try {
       const response = await fetch('http://localhost:5000/todos')
       const jsonData = await response.json()
+      console.log(data)
       setTodos(jsonData)
     } catch (err) {
       console.log(err)
@@ -30,7 +35,7 @@ const ListTodos = () => {
 
   useEffect(() => {
     getTodos()
-  }, [])
+  }, [data])
 
   return (
     <>
@@ -43,11 +48,6 @@ const ListTodos = () => {
           </tr>
         </thead>
         <tbody>
-          {/* <tr>
-            <td>John</td>
-            <td>Doe</td>
-            <td>john@example.com</td>
-          </tr> */}
           {todos.map((todo) => {
             return (
               <tr key={todo.todo_id}>
