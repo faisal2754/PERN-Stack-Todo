@@ -2,14 +2,33 @@ const cors = require('cors')
 const express = require('express')
 const router = require('../router/routes')
 
-const app = express()
+const { ApolloServer } = require('apollo-server-express')
+const { typeDefs, resolvers } = require('../schema/schema')
 
-app.use(cors())
-app.use(express.json())
+const startApolloServer = async () => {
+  // Same ApolloServer initialization as before
+  const server = new ApolloServer({ typeDefs, resolvers })
 
-// Routes
-app.use('/todos', router)
+  // Required logic for integrating with Express
+  await server.start()
+  const app = express()
 
-app.listen(5000, () => {
-  console.log('server started on port 5000')
+  // app middleware & routes
+  app.use(cors())
+  app.use(express.json())
+  app.use('/todos', router)
+
+  // apply app as middleware for main server
+  server.applyMiddleware({
+    app,
+    path: '/'
+  })
+
+  // Modified server startup
+  await new Promise((resolve) => app.listen({ port: 5000 }, resolve))
+  console.log(`🚀 Server ready at http://localhost:5000${server.graphqlPath}`)
+}
+
+startApolloServer().catch((e) => {
+  console.log(e)
 })
