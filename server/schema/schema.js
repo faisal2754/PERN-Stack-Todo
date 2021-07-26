@@ -14,6 +14,12 @@ const typeDefs = gql`
     todos: [Todo]
     todo(id: Int!): Todo
   }
+
+  type Mutation {
+    createTodo(description: String!): Todo
+    updateTodo(id: Int!, description: String!): Todo
+    deleteTodo(id: Int!): Todo
+  }
 `
 const resolvers = {
   Query: {
@@ -29,6 +35,31 @@ const resolvers = {
         }
       })
       return todo
+    }
+  },
+  Mutation: {
+    createTodo: async (_, { description }) => {
+      const newTodo = await prisma.todo.create({
+        data: { description }
+      })
+      return newTodo
+    },
+    updateTodo: async (_, { id, description }) => {
+      const updateTodo = await prisma.todo.update({
+        where: {
+          todo_id: id
+        },
+        data: { description }
+      })
+      return updateTodo
+    },
+    deleteTodo: async (_, { id }) => {
+      const deleteTodo = await prisma.todo.delete({
+        where: {
+          todo_id: id
+        }
+      })
+      return deleteTodo
     }
   }
 }
