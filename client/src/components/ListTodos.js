@@ -4,12 +4,12 @@ import { GET_TODOS, DELETE_TODO } from '../graphql/queries'
 
 const ListTodos = () => {
   const getTodos = useQuery(GET_TODOS)
-  const [deleteTodoM] = useMutation(DELETE_TODO)
+  const [deleteTodo] = useMutation(DELETE_TODO)
 
   // OnDelete
-  const deleteTodo = async (id) => {
+  const removeTodo = async (id) => {
     try {
-      await deleteTodoM({
+      await deleteTodo({
         variables: { id: Number(id) },
         refetchQueries: [{ query: GET_TODOS }]
       })
@@ -18,7 +18,7 @@ const ListTodos = () => {
     }
   }
 
-  if (getTodos.loading) return <h2 className="mt-5 text-center">Loading</h2>
+  if (getTodos.loading) return <h2 className="mt-5 text-center">Loading...</h2>
   if (getTodos.error) return <h2 className="mt-5 text-center">Error</h2>
 
   return (
@@ -42,7 +42,7 @@ const ListTodos = () => {
                 <td>
                   <button
                     className="btn btn-danger"
-                    onClick={() => deleteTodo(todo.todo_id)}>
+                    onClick={() => removeTodo(todo.todo_id)}>
                     Delete
                   </button>
                 </td>
