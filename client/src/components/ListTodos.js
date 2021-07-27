@@ -1,41 +1,25 @@
-import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import EditTodo from './EditTodo'
-import { GET_TODOS } from '../graphql/queries'
+import { GET_TODOS, DELETE_TODO } from '../graphql/queries'
 
 const ListTodos = () => {
-  const [todos, setTodos] = useState([])
+  const getTodos = useQuery(GET_TODOS)
+  const [deleteTodoM] = useMutation(DELETE_TODO)
 
-  const { loading, error, data } = useQuery(GET_TODOS)
-
-  // DELETE Request
+  // OnDelete
   const deleteTodo = async (id) => {
     try {
-      await fetch(`http://localhost:5000/todos/${id}`, {
-        method: 'DELETE'
+      await deleteTodoM({
+        variables: { id: Number(id) },
+        refetchQueries: [{ query: GET_TODOS }]
       })
-
-      setTodos(todos.filter((todo) => todo.todo_id !== id))
     } catch (err) {
       console.log(err)
     }
   }
 
-  // GET Request
-  const getTodos = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/todos')
-      const jsonData = await response.json()
-      console.log(data)
-      setTodos(jsonData)
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  useEffect(() => {
-    getTodos()
-  }, [data])
+  if (getTodos.loading) return <h2 className="mt-5 text-center">Loading</h2>
+  if (getTodos.error) return <h2 className="mt-5 text-center">Error</h2>
 
   return (
     <>
@@ -48,7 +32,7 @@ const ListTodos = () => {
           </tr>
         </thead>
         <tbody>
-          {todos.map((todo) => {
+          {getTodos.data.todos.map((todo) => {
             return (
               <tr key={todo.todo_id}>
                 <td>{todo.description}</td>

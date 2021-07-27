@@ -1,18 +1,16 @@
 import { useState } from 'react'
+import { useMutation } from '@apollo/client'
+import { ADD_TODO } from '../graphql/queries'
 
 const InputTodo = () => {
   const [description, setDescription] = useState('')
 
+  const [addTodo] = useMutation(ADD_TODO)
+
   const onSubmit = async (e) => {
     e.preventDefault()
     try {
-      const body = { description }
-      await fetch('http://localhost:5000/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
-
+      await addTodo({ variables: { description } })
       window.location = '/'
     } catch (err) {
       console.log(err)

@@ -1,18 +1,15 @@
+import { useMutation } from '@apollo/client'
 import { useState } from 'react'
+import { UPDATE_TODO } from '../graphql/queries'
 
 const EditTodo = ({ todo }) => {
   const [description, setDescription] = useState(todo.description)
+  const [updateTodo] = useMutation(UPDATE_TODO)
 
   const updateDescription = async (e) => {
     e.preventDefault()
     try {
-      const body = { description }
-      await fetch(`http://localhost:5000/todos/${todo.todo_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
-
+      await updateTodo({ variables: { id: Number(todo.todo_id), description } })
       window.location = '/'
     } catch (err) {
       console.log(err)

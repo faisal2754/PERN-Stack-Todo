@@ -6,7 +6,19 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 
 const client = new ApolloClient({
   uri: 'http://localhost:5000/',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          todos: {
+            merge: (existing, incoming) => {
+              return incoming
+            }
+          }
+        }
+      }
+    }
+  })
 })
 
 ReactDOM.render(
