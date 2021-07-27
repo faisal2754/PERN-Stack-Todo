@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { UPDATE_TODO } from '../graphql/queries'
+import { UPDATE_TODO, GET_TODOS } from '../graphql/queries'
 
 const EditTodo = ({ todo }) => {
   const [description, setDescription] = useState(todo.description)
@@ -9,8 +9,10 @@ const EditTodo = ({ todo }) => {
   const updateDescription = async (e) => {
     e.preventDefault()
     try {
-      await updateTodo({ variables: { id: Number(todo.todo_id), description } })
-      window.location = '/'
+      await updateTodo({
+        variables: { id: Number(todo.todo_id), description },
+        refetchQueries: [{ query: GET_TODOS }]
+      })
     } catch (err) {
       console.log(err)
     }

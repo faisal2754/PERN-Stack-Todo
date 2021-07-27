@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ADD_TODO } from '../graphql/queries'
+import { ADD_TODO, GET_TODOS } from '../graphql/queries'
 
 const InputTodo = () => {
   const [description, setDescription] = useState('')
@@ -10,8 +10,12 @@ const InputTodo = () => {
   const onSubmit = async (e) => {
     e.preventDefault()
     try {
-      await addTodo({ variables: { description } })
-      window.location = '/'
+      await addTodo({
+        variables: { description },
+        refetchQueries: [{ query: GET_TODOS }]
+      })
+      setDescription('')
+      // window.location = '/'
     } catch (err) {
       console.log(err)
     }
