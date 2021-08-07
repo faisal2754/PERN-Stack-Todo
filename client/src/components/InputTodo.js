@@ -15,7 +15,6 @@ const InputTodo = () => {
         refetchQueries: [{ query: GET_TODOS }]
       })
       setDescription('')
-      // window.location = '/'
     } catch (err) {
       console.log(err)
     }
